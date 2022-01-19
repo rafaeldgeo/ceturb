@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Integração Temporal Serra Dourada ao Terminal Jacaraípe</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" 
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" 
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+</head>
+<body>
+    <div id="mapa"></div>
+
+      
+    <!--- Leaflet -->
+
+    <script>
+        const lat = -20.271926, lng = -40.325852
+        const zoom = 11.5
+
+        var map = L.map("mapa", {
+            zoomSnap: 0.25 // definição de zoom
+        }).setView([lat, lng],zoom)
+        
+        // bases cartográficas
+        var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	    subdomains: 'abcd',
+	    minZoom: zoom,
+        }).addTo(map)
+
+        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        minZoom: zoom,
+        })
+
+        // camada das bases
+        var baseLayers = {
+            "Padrão": CartoDB_Voyager,
+            "Satélite": Esri_WorldImagery
+        }
+
+        // controle de camadas
+        let controle = L.control.layers(baseLayers).addTo(map)
+
+        // criar icone usando DIV
+        function getIcon(prefixo){
+            return L.divIcon({html:`<p id="paragrafo">${prefixo}</p>`,className:'icone'})
+        }
+
+        // localização terminais
+        let tjc = L.marker([-20.159310,-40.195600], {icon:getIcon('TJC')}).bindTooltip('Terminal Jacaraípe',getToolip()).addTo(map)
+        let tla = L.marker([-20.193600,-40.255401], {icon:getIcon('TLA')}).bindTooltip('Terminal Laranjeiras',getToolip()).addTo(map)
+        //let tca = L.marker([-20.230580,-40.270100], {icon:getIcon('TCA')}).bindTooltip('Terminal Carapina',getToolip()).addTo(map)
+        //let tst = L.marker([-20.330000,-40.353185], {icon:getIcon('TST')}).bindTooltip('Terminal São Torquato',getToolip()).addTo(map)
+        //let tja = L.marker([-20.333730,-40.359087], {icon:getIcon('TJA')}).bindTooltip('Terminal Jardim América',getToolip()).addTo(map)
+        //let tic = L.marker([-20.325550,-40.372151], {icon:getIcon('TIC')}).bindTooltip('Terminal Itacibá',getToolip()).addTo(map)
+        //let tcg = L.marker([-20.346329,-40.396696], {icon:getIcon('TCG')}).bindTooltip('Terminal Campo Grande',getToolip()).addTo(map)
+        //let tib = L.marker([-20.346300,-40.315460], {icon:getIcon('TIB')}).bindTooltip('Terminal Ibes',getToolip()).addTo(map)
+        //let tvl = L.marker([-20.342650,-40.294687], {icon:getIcon('TVL')}).bindTooltip('Terminal Vila Velha',getToolip()).addTo(map)
+        //let tip = L.marker([-20.391223,-40.321020], {icon:getIcon('TIP')}).bindTooltip('Terminal Itaparica',getToolip()).addTo(map)
+
+     
+        // configurar Toolip com nome do terminal
+        function getToolip() {
+            return {
+                permanent: false,
+                offset: [20,3],
+                sticky: true, 
+            }
+        }
+
+        // inserir logo da Ceturb
+        var logomarca = L.control({position:"bottomright"})
+        logomarca.onAdd = function(map) {
+            var img = L.DomUtil.create('img','logo')
+            img.src = 'imagens/logoceturb.svg'
+            img.style.opacity = 0.6
+            img.style.width = "110px"
+            return img;
+        }
+        logomarca.addTo(map)
+        
+    </script>
+    
+</body>
+</html>
