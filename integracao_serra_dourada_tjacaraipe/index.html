@@ -10,10 +10,12 @@
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" 
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="dados/l813.js"></script>
+    <script src="dados/l823.js"></script>
+    <script src="dados/l892.js"></script>
 </head>
 <body>
     <div id="mapa"></div>
-
       
     <!--- Leaflet -->
 
@@ -44,7 +46,7 @@
         }
 
         // controle de camadas
-        let controle = L.control.layers(baseLayers).addTo(map)
+        var controle = L.control.layers(baseLayers).addTo(map)
 
         // criar icone usando DIV
         function getIcon(prefixo){
@@ -74,17 +76,55 @@
         }
 
         // inserir logo da Ceturb
-        var logomarca = L.control({position:"bottomright"})
+        let logomarca = L.control({position:"bottomright"})
         logomarca.onAdd = function(map) {
-            var img = L.DomUtil.create('img','logo')
+            let img = L.DomUtil.create('img','logo')
             img.src = 'imagens/logoceturb.svg'
             img.style.opacity = 0.6
             img.style.width = "110px"
             return img;
         }
         logomarca.addTo(map)
+
+        let linha813 = L.geoJSON(l813, {
+            style: estilo("orange",8)
+        }).bindPopup(nomes).addTo(map)
         
+        let linha823 = L.geoJSON(l823, {
+            style: estilo("blue",8)
+        }).bindPopup(nomes).addTo(map)
+
+        let linhas892 = L.geoJSON(l892, {
+            style: estilo("red",5)
+        }).bindPopup(nomes, {maxWidth:1000}).addTo(map)
+
+        // definir estilo das linhas
+        function estilo(cor,largura) {
+            return {
+                    color: cor,
+                    weight: largura,
+                    opacity: 0.5,
+                }
+        }
+
+        function nomes(layer){
+            switch (layer.feature.properties.codigo) {
+                case 813:
+                return `<span id="linha813">${layer.feature.properties.codigo}</span>` +
+                ` ${layer.feature.properties.nome}`
+                break        
+                case 823:
+                return `<span id="linha823">${layer.feature.properties.codigo}</span>` +
+                ` ${layer.feature.properties.nome}`        
+                break
+                case 892:
+                return `<span id="linha892">${layer.feature.properties.codigo}</span>` +
+                ` ${layer.feature.properties.nome}`        
+                break
+                default:
+            }           
+        }
+
     </script>
-    
 </body>
 </html>

@@ -23,3 +23,23 @@ html, body, #mapa {
 div.titulo {
     opacity: 0.6;
 }
+
+span {
+    padding: 2px;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+span#linha813 {
+    background-color: green;
+}
+
+span#linha823 {
+    background-color: red;
+}
+
+span#linha892 {
+    background-color: blue;
+}
