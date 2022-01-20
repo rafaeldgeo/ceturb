@@ -10,9 +10,12 @@
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" 
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="leaflet-geometryutil.js"></script> <!-- leaflet-arrowheads-->
+    <script src="leaflet-arrowheads.js"></script>  <!-- leaflet-arrowheads-->
     <script src="dados/l813.js"></script>
     <script src="dados/l823.js"></script>
     <script src="dados/l892.js"></script>
+    
 </head>
 <body>
     <div id="mapa"></div>
@@ -79,24 +82,27 @@
         let logomarca = L.control({position:"bottomright"})
         logomarca.onAdd = function(map) {
             let img = L.DomUtil.create('img','logo')
-            img.src = 'imagens/logoceturb.svg'
-            img.style.opacity = 0.6
-            img.style.width = "110px"
+            img.src = 'imagens/logoceturb.png'
+            img.style.opacity = 0.8,
+            img.style.width = "120px"
             return img;
         }
         logomarca.addTo(map)
 
         let linha813 = L.geoJSON(l813, {
-            style: estilo("orange",8)
-        }).bindPopup(nomes).addTo(map)
-        
+            style: estilo("orange",5),
+            arrowheads: {fill: true, yawn: 60, size:'20%', frequency:'200m'} // setas
+        }).bindPopup(nomeLinha, {maxWidth:1000}).addTo(map)
+
         let linha823 = L.geoJSON(l823, {
-            style: estilo("blue",8)
-        }).bindPopup(nomes).addTo(map)
+            style: estilo("blue",5),
+            arrowheads: {fill: true, yawn: 60, size:'20%', frequency:'200m'} // setas
+        }).bindPopup(nomeLinha, {maxWidth:1000}).addTo(map)
 
         let linhas892 = L.geoJSON(l892, {
-            style: estilo("red",5)
-        }).bindPopup(nomes, {maxWidth:1000}).addTo(map)
+            style: estilo("red",5),
+            arrowheads: {fill: true, yawn: 60, size:'20%', frequency:'200m'} // setas
+        }).bindPopup(nomeLinha, {maxWidth:1000}).addTo(map)
 
         // definir estilo das linhas
         function estilo(cor,largura) {
@@ -107,23 +113,24 @@
                 }
         }
 
-        function nomes(layer){
+        // formatação do popup com informação da linha
+        function nomeLinha(layer){
             switch (layer.feature.properties.codigo) {
                 case 813:
                 return `<span id="linha813">${layer.feature.properties.codigo}</span>` +
-                ` ${layer.feature.properties.nome}`
+                ` <span class="nome-linha">${layer.feature.properties.nome}</span>`
                 break        
                 case 823:
                 return `<span id="linha823">${layer.feature.properties.codigo}</span>` +
-                ` ${layer.feature.properties.nome}`        
+                ` <span class="nome-linha">${layer.feature.properties.nome}</span>`
                 break
                 case 892:
                 return `<span id="linha892">${layer.feature.properties.codigo}</span>` +
-                ` ${layer.feature.properties.nome}`        
+                ` <span class="nome-linha">${layer.feature.properties.nome}</span>`
                 break
                 default:
             }           
-        }
+        }  
 
     </script>
 </body>

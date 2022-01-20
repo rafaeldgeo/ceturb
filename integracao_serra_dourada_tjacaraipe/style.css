@@ -33,13 +33,18 @@ span {
 }
 
 span#linha813 {
-    background-color: green;
+    background-color: orange;
 }
 
 span#linha823 {
-    background-color: red;
+    background-color: blue;
 }
 
 span#linha892 {
-    background-color: blue;
+    background-color: red;
+}
+
+span.nome-linha {
+    font-weight: bold;
+    color: black
 }
