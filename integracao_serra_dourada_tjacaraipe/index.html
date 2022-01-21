@@ -137,7 +137,8 @@
         function getPonto(feature, latlng){
             let iconePonto = L.icon({
             iconUrl: 'imagens/icone_ponto.svg',
-            iconAnchor: [35,35]
+            iconSize: [60],
+            iconAnchor: [20,35]
             
         })
             return L.marker(latlng, {icon: iconePonto})
