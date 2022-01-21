@@ -23,33 +23,31 @@
     <!--- Leaflet -->
 
     <script>
-        const lat = -20.271926, lng = -40.325852
-        const zoom = 11.5
+        const lat = -20.139214, lng = -40.243905
+        const zoom = 17
 
         var map = L.map("mapa", {
-            zoomSnap: 0.20 // definição de zoom
+            zoomSnap: 0.25 // definição de zoom
         }).setView([lat, lng],zoom)
         
         // bases cartográficas
-        var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-	    subdomains: 'abcd',
-	    minZoom: zoom,
-        }).addTo(map)
-
-        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        minZoom: zoom,
-        })
-
-        // camada das bases
-        var baseLayers = {
-            "Padrão": CartoDB_Voyager,
-            "Satélite": Esri_WorldImagery
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	    maxZoom: 19,
+	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map) 
+        
+        // inserir logo da Ceturb no mapa
+        let logomarca = L.control({position:"bottomright"})
+        logomarca.onAdd = function(map) {
+            let img = L.DomUtil.create('img','logo')
+            img.src = 'imagens/logoceturb.png'
+            img.style.opacity = 0.8,
+            img.style.width = "120px"
+            return img;
         }
+        logomarca.addTo(map)
 
-        // controle de camadas
-        var controle = L.control.layers(baseLayers).addTo(map)
+        // TERMINAIS
 
         // criar icone usando DIV
         function getIcon(prefixo){
@@ -78,29 +76,20 @@
             }
         }
 
-        // inserir logo da Ceturb
-        let logomarca = L.control({position:"bottomright"})
-        logomarca.onAdd = function(map) {
-            let img = L.DomUtil.create('img','logo')
-            img.src = 'imagens/logoceturb.png'
-            img.style.opacity = 0.8,
-            img.style.width = "120px"
-            return img;
-        }
-        logomarca.addTo(map)
-
-        // linhas de ônibus
-        let linha813 = L.geoJSON(l813, {
+        // LINHAS DE ÔNIBUS
+        
+        // inserir linhas de ônibus
+        var linha813 = L.geoJSON(l813, {
             style: estilo("orange",8),
             arrowheads: {fill: true, yawn: 60, size:'20%', frequency:'200m'} // setas
         }).bindPopup(nomeLinha, {maxWidth:1000}).addTo(map)
 
-        let linha823 = L.geoJSON(l823, {
+        var linha823 = L.geoJSON(l823, {
             style: estilo("blue",7),
             arrowheads: {fill: true, yawn: 60, size:'20%', frequency:'200m'} // setas
         }).bindPopup(nomeLinha, {maxWidth:1000}).addTo(map)
 
-        let linhas892 = L.geoJSON(l892, {
+        var linha892 = L.geoJSON(l892, {
             style: estilo("red",5),
             arrowheads: {fill: true, yawn: 60, size:'20%', frequency:'200m'} // setas
         }).bindPopup(nomeLinha, {maxWidth:1000}).addTo(map)
@@ -114,39 +103,59 @@
                 }
         }
 
+        //LEGENDA
+               
+        //camadas
+       var camada = {
+       "<span class='l813'>813</span> <span class='nome-linha'> SERRA DOURADA I/ T. LARANJEIRAS</span>": linha813,
+        "<span class='l823'>823</span> <span class='nome-linha'> T. JACARAIPE/ CAPIVARI VIA JARDIM JUARA</span>": linha823,
+        "<span class='l892'>892</span> <span class='nome-linha'> T. LARANJEIRAS/ PORTO DOURADO VIA PLANÍCIE DA SERRA</span>": linha892,
+       }
+
+        // inserir controle no mapa
+        var controle = L.control.layers(null,camada, {collapsed:false}).addTo(map)
+  
         // formatação do popup com informação dos linhas de ônibus
         function nomeLinha(layer){
             switch (layer.feature.properties.codigo) {
                 case 813:
-                return `<span id="linha813">${layer.feature.properties.codigo}</span>` +
+                return `<span class="l813">${layer.feature.properties.codigo}</span>` +
                 ` <span class="nome-linha">${layer.feature.properties.nome}</span>`
                 break        
                 case 823:
-                return `<span id="linha823">${layer.feature.properties.codigo}</span>` +
-                ` <span class="nome-linha">${layer.feature.properties.nome}</span>`
+                return `<span class="l823">${layer.feature.properties.codigo}</span>` +
+                ` <span class='nome-linha'>${layer.feature.properties.nome}</span>`
                 break
                 case 892:
-                return `<span id="linha892">${layer.feature.properties.codigo}</span>` +
+                return `<span class="l892">${layer.feature.properties.codigo}</span>` +
                 ` <span class="nome-linha">${layer.feature.properties.nome}</span>`
                 break
                 default:
             }           
         }  
 
-        // pontos de parada        
+        // PONTOS DE PARADA
+
+        // personalizar icone
         function getPonto(feature, latlng){
             let iconePonto = L.icon({
             iconUrl: 'imagens/icone_ponto.svg',
             iconSize: [60],
-            iconAnchor: [20,35]
+            iconAnchor: [35,35]
             
         })
             return L.marker(latlng, {icon: iconePonto})
         }   
 
-        let layerIcone = {pointToLayer: getPonto}
+        var layerIcone = {pointToLayer: getPonto}
 
-        let pontoParada = L.geoJSON(pontos, layerIcone).addTo(map)
+        // inserir pontos de parada
+        var pontoParada = L.geoJSON(pontos, layerIcone).bindTooltip(
+            function(layer) {
+                return `<span id="info-ponto">Ponto de ônibus para a integração</span></br>`
+                + ` <div id="info-rua">${layer.feature.properties.logradouro}</div>`
+            }
+        ).addTo(map)
         
     
     </script>

@@ -24,7 +24,7 @@ div.titulo {
     opacity: 0.6;
 }
 
-span {
+span.l813, .l823, .l892 {
     padding: 2px;
     color: white;
     border-radius: 5px;
@@ -32,19 +32,30 @@ span {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-span#linha813 {
+span.l813 {
     background-color: orange;
 }
 
-span#linha823 {
+span.l823 {
     background-color: blue;
 }
 
-span#linha892 {
+span.l892 {
     background-color: red;
 }
 
 span.nome-linha {
     font-weight: bold;
     color: black
+}
+
+span#info-ponto{
+    font-weight: bold;
+    color: black;
+}
+div#info-rua {
+    background-color: rgba(0, 0, 0, 0.493);
+    color: white;
+    font-weight: bold;
+    text-align: center;
 }
