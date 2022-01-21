@@ -27,7 +27,7 @@
         const zoom = 11.5
 
         var map = L.map("mapa", {
-            zoomSnap: 0.25 // definição de zoom
+            zoomSnap: 0.20 // definição de zoom
         }).setView([lat, lng],zoom)
         
         // bases cartográficas
@@ -137,6 +137,7 @@
         function getPonto(feature, latlng){
             let iconePonto = L.icon({
             iconUrl: 'imagens/icone_ponto.svg',
+            iconAnchor: [35,35]
             
         })
             return L.marker(latlng, {icon: iconePonto})
