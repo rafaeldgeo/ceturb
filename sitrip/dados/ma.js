@@ -1,0 +1,1 @@
+var maraberto = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[-39.83535568943604,-18.46104710504686,0]},"properties":{"name":"MA"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-39.96271891512985,-18.2055808890906,0]},"properties":{"name":"MA"}}]}

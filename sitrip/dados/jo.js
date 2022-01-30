@@ -1,0 +1,1 @@
+var joanadarc = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[-40.11001090810132,-19.41912737593687,0]},"properties":{"name":"JO"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-40.1454803711279,-19.10904424926001,0]},"properties":{"name":"JO"}}]}

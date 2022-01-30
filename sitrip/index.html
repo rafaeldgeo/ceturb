@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Municípios de atuação das empresas do Sistema Rodoviário Intermunicipal de Passageiros - Sitrip</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="leaflet/leaflet.css">
+</head>
+<body>
+    <main id="mapa"></main>  
+</body>
+</html>
+
+<script src="leaflet/leaflet.js"></script>
+<script src="dados/municipios.js"></script>
+<script src="dados/ag.js"></script>
+<script src="dados/al.js"></script>
+<script src="dados/co.js"></script>
+<script src="dados/cs.js"></script>
+<script src="dados/ea.js"></script>
+<script src="dados/ex.js"></script>
+<script src="dados/jo.js"></script>
+<script src="dados/li.js"></script>
+<script src="dados/ma.js"></script>
+<script src="dados/mi.js"></script>
+<script src="dados/mr.js"></script>
+<script src="dados/mu.js"></script>
+<script src="dados/pl.js"></script>
+<script src="dados/pr.js"></script>
+<script src="dados/re.js"></script>
+<script src="dados/sg.js"></script>
+<script src="dados/sr.js"></script>
+<script src="dados/su.js"></script>
+<script type="text/javascript">
+
+    // definir vista inicial do mapa
+    const lat = -19.63224019048383;
+    const lng = -40.49560546875;
+
+    // definindo zoom
+    const zoom = 8;
+     
+    // alterar posição do zoom
+    var map = L.map("mapa", {
+        zoomControl: false,
+        zoomSnap: 0.25 // permite definir níveis mais detalhados de zoom
+    }).setView([lat, lng],zoom);
+    
+    L.control.zoom({
+        position:'bottomleft'
+    }).addTo(map);
+
+    // Posicionar tile com labels para a primeira camada
+    map.createPane('labels');
+    map.getPane('labels').style.zIndex = 650; // define a ordem da camada
+    map.getPane('labels').style.pointerEvents = 'none';
+
+    //  base com a demarcação dos território
+    var CartoDB_PositronNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	minZoom: zoom,
+    }).addTo(map);
+
+    // base com somente nomes dos lugares
+    var CartoDB_PositronOnlyLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	    subdomains: 'abcd',
+	    minZoom: zoom,
+        pane: 'labels'
+    }).addTo(map);
+
+    // inserir titulo e logo
+    var titulo = L.control({position:"topleft"});
+    titulo.onAdd = function(map) {
+        var div = L.DomUtil.create('div','titulo');
+        div.innerHTML = '<img src="icones/logoceturb.svg" alt="Logomarca Ceturb" id="logoceturb"> </br>Municípios de atuação das empresas do Sistema Rodoviário Intermunicipal de Passageiros - Sitrip';
+        return div;
+    }
+    titulo.addTo(map);
+    
+    // mostra seleção do munícipio
+    function highlightFeature(e){
+        var layer = e.target;
+
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+    }
+
+    // limpar seleção
+    function resetHighLight(e) {
+        municipios.resetStyle(e.target)
+    }
+
+    // zoom no município
+    function zoomToFeature(e) {
+        map.fitBounds(e.target.getBounds());
+    }
+
+    // eventos no mouse reune todas as funções
+    function onEachFeature(feature, layer) {
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighLight,
+            click: zoomToFeature
+            
+        });
+        layer.bindTooltip(feature.properties.nome);
+    }
+
+
+    // obtendo geojson municípios
+    var municipios = L.geoJSON(basemunicipios, {
+        onEachFeature: onEachFeature
+    }).addTo(map);
+
+    // selecionar o icone
+    function getImagem(e) {
+        return e == 'AG' ? 'icones/ag.svg':
+               e == 'AL' ? 'icones/al.svg':
+               e == 'CO' ? 'icones/co.svg':
+               e == 'CS' ? 'icones/cs.svg':
+               e == 'EA' ? 'icones/ea.svg':
+               e == 'EX' ? 'icones/ex.svg':
+               e == 'JO' ? 'icones/jo.svg':
+               e == 'LI' ? 'icones/li.svg':
+               e == 'MA' ? 'icones/ma.svg':
+               e == 'MR' ? 'icones/mr.svg':
+               e == 'MI' ? 'icones/mi.svg':
+               e == 'MU' ? 'icones/mu.svg':
+               e == 'PL' ? 'icones/pl.svg':
+               e == 'PR' ? 'icones/pr.svg':
+               e == 'RE' ? 'icones/re.svg':
+               e == 'SG' ? 'icones/sg.svg':
+               e == 'SR' ? 'icones/sr.svg':
+               e == 'SU' ? 'icones/su.svg':
+                           'icones/ni.svg';
+    }
+    
+    
+    // definir o icone
+    function getIcone(feature, latlng){   
+        let myIcon = L.icon({
+            iconUrl: getImagem(feature.properties.name),
+            iconSize: [25,25],
+            
+        })
+        return L.marker(latlng, {icon:myIcon})
+    }
+    
+    // variavel para passar o icone
+    var icone = {pointToLayer: getIcone}
+
+    // obtendo geojson
+    var ag = L.geoJSON(aguiabranca, icone,).bindPopup("Águia Branca");
+    var al = L.geoJSON(alvorada, icone).bindPopup("Alvorada");
+    var co = L.geoJSON(cordial, icone).bindPopup("Cordial");
+    var cs = L.geoJSON(costasul, icone).bindPopup("Costa Sul");;
+    var ex = L.geoJSON(expressatransportes, icone).bindPopup("Expressa Transportes");
+    var ea = L.geoJSON(expressoaracruz, icone).bindPopup("Expresso Aracruz");
+    var jo = L.geoJSON(joanadarc, icone).bindPopup("Joana D&#180arc");
+    var li = L.geoJSON(liriodosvales, icone).bindPopup("Lírio dos Vales");
+    var ma = L.geoJSON(maraberto, icone).bindPopup("Mar Aberto");
+    var mr = L.geoJSON(marilandia, icone).bindPopup("Marilândia");
+    var mi = L.geoJSON(minastur, icone).bindPopup("Minastur");
+    var mu = L.geoJSON(mutumpreto, icone).bindPopup("Mutum Preto");
+    var pl = L.geoJSON(planeta, icone).bindPopup("Planeta");
+    var pr = L.geoJSON(pretti, icone).bindPopup("Pretti");
+    var re = L.geoJSON(realita, icone).bindPopup("Real Ita");
+    var sg = L.geoJSON(saogabriel, icone).bindPopup("São Gabriel");
+    var sr = L.geoJSON(saoroque, icone).bindPopup("São Roque");
+    var su = L.geoJSON(sudeste, icone).bindPopup("Sudeste");
+
+    // agrupando as empresas
+    var grupoEmpresas = L.layerGroup([ag,al,co,cs,ex,ea,jo,li,ma,mr,mi,mu,pl,pr,re,sg,sr,su]).addTo(map);
+       
+    // definindo controle do grupo
+    var overlayerGrupo = {
+        'Todas as empresas': grupoEmpresas,
+    }
+    
+    // definindo controle individual e icones
+    var overlayer = {
+        '<img src="icones/ag.svg" class="icone"/><span class="descricao">Águia Branca</span>': ag,
+        '<img src="icones/al.svg" class="icone"/><span class="descricao">Alvorada</span>': al,
+        '<img src="icones/co.svg" class="icone"/><span class="descricao">Cordial</span>': co,
+        '<img src="icones/cs.svg" class="icone"/><span class="descricao">Costal Sul</span>': cs,
+        '<img src="icones/ex.svg" class="icone"/><span class="descricao">Expressa Transportes</span>': ex,
+        '<img src="icones/ea.svg" class="icone"/><span class="descricao">Expresso Aracruz</span>': ea,
+        '<img src="icones/jo.svg" class="icone"/><span class="descricao">Joana D&#180arc</span>': jo,
+        '<img src="icones/li.svg" class="icone"/><span class="descricao">Lírio dos Vales</span>': li,
+        '<img src="icones/ma.svg" class="icone"/><span class="descricao">Mar Aberto</span>': ma,
+        '<img src="icones/mr.svg" class="icone"/><span class="descricao">Marilândia</span>': mr,
+        '<img src="icones/mi.svg" class="icone"/><span class="descricao">Minastur</span>': mi,
+        '<img src="icones/mu.svg" class="icone"/><span class="descricao">Mutum Preto</span>': mu,
+        '<img src="icones/pl.svg" class="icone"/><span class="descricao">Planeta</span>': pl,
+        '<img src="icones/pr.svg" class="icone"/><span class="descricao">Preti</span>': pr,
+        '<img src="icones/re.svg" class="icone"/><span class="descricao">Real Ita</span>': re,
+        '<img src="icones/sg.svg" class="icone"/><span class="descricao">São Gabriel</span>': sg,
+        '<img src="icones/sr.svg" class="icone"/><span class="descricao">São Roque</span>': sr,
+        '<img src="icones/su.svg" class="icone"/><span class="descricao">Sudeste</span>': su,
+    }
+    
+    //inserindo controles no mapa
+    var controle = L.control.layers(null,overlayer, {collapsed:true,position:"bottomright"}).addTo(map);
+    var controlGrupo = L.control.layers(null,overlayerGrupo, {collapsed:false, position:"bottomright"}).addTo(map);
+    
+    
+</script>
