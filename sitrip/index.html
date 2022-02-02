@@ -44,14 +44,21 @@
      
     // alterar posição do zoom
     var map = L.map("mapa", {
-        zoomControl: false,
+        zoomControl: true,
         zoomSnap: 0.25 // permite definir níveis mais detalhados de zoom
     }).setView([lat, lng],zoom);
-    
-    L.control.zoom({
-        position:'bottomleft'
-    }).addTo(map);
 
+    // inserir logo da Ceturb no mapa
+    let logomarca = L.control({position:"bottomleft"})
+        logomarca.onAdd = function(map) {
+            let img = L.DomUtil.create('img','logo')
+            img.src = 'icones/logoceturb.png'
+            img.style.opacity = 0.8,
+            img.style.width = "120px"
+            return img;
+        }
+        logomarca.addTo(map)
+    
     // Posicionar tile com labels para a primeira camada
     map.createPane('labels');
     map.getPane('labels').style.zIndex = 650; // define a ordem da camada
@@ -72,15 +79,6 @@
         pane: 'labels'
     }).addTo(map);
 
-    // inserir titulo e logo
-    var titulo = L.control({position:"topleft"});
-    titulo.onAdd = function(map) {
-        var div = L.DomUtil.create('div','titulo');
-        div.innerHTML = '<img src="icones/logoceturb.svg" alt="Logomarca Ceturb" id="logoceturb"> </br>Municípios de atuação das empresas do Sistema Rodoviário Intermunicipal de Passageiros - Sitrip';
-        return div;
-    }
-    titulo.addTo(map);
-    
     // mostra seleção do munícipio
     function highlightFeature(e){
         var layer = e.target;
