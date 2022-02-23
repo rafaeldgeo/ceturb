@@ -8,11 +8,86 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" 
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <link rel="stylesheet" href="plugins/MarkerCluster.Default.css">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" 
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-
+    <script src="plugins/leaflet.markercluster.js"></script>
+    <script src="dados/pontos.js"></script>
 </head>
 <body>
+    <div id="mapa"></div>
+
+    <!--Leaflet-->
+
+    <script>
+        const lat = -20.271926, lng = -40.325852
+        const zoom = 11.5
+
+        var map = L.map("mapa", {
+            zoomSnap: 0.25 // definição de zoom
+        }).setView([lat, lng],zoom);
+        
+        // bases cartográficas
+        var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	    subdomains: 'abcd',
+	    minZoom: zoom,
+        }).addTo(map);
+
+        var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']});
+
+        // legenda com camada de bases
+        var baselayers = {
+            'Vetorial': CartoDB_Voyager,
+            'Satélite': googleSat,
+        }
+
+        var controle = L.control.layers(baselayers).addTo(map);
+
+        // logomarca ceturb
+        var logomarca = L.control({position:"bottomright"})
+        logomarca.onAdd = function(map) {
+            let img = L.DomUtil.create('img','logo');
+            img.src = 'imagens/logoceturb.png';
+            img.style.opacity = 0.8;
+            img.style.width = '120px';
+            return img
+        }
+        logomarca.addTo(map);
+        
+
+        // inserindo pontos
+        var pontos = L.geoJSON(pontos, {onEachFeature: function(feature,layer){
+            let popupContent = `Código: ${layer.feature.properties.stop_code}`
+            layer.bindPopup(popupContent);
+        },
+        
+        pointToLayer: function(feature, latlng) {
+            let myIcon = L.icon({
+                iconUrl: 'imagens/stop_bus2x.svg',
+                iconSize: [42,42],
+            });
+            return L.marker(latlng, {icon:myIcon});
+        }    
+    });
+
+        //inserindo cluster
+        var cPontos = L.markerClusterGroup({
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            spiderfyOnMaxZoom: true,
+            maxClusterRadius: 100,
+            spiderfyShapePositions: false,
+        });
+        cPontos.addLayer(pontos);
+        map.addLayer(cPontos);
+
+
+
+
+    </script>
     
 </body>
 </html>

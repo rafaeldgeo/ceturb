@@ -1,8 +1,10 @@
 @charset "UFT-8";
 
-body, html {
+body, html, #mapa {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100vw;
 }
 
 
