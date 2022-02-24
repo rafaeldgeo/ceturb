@@ -13,6 +13,7 @@
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
     <script src="plugins/leaflet.markercluster.js"></script>
     <script src="dados/pontos.js"></script>
+    <script src="dados/rmgv.js"></script>
 </head>
 <body>
     <div id="mapa"></div>
@@ -20,8 +21,8 @@
     <!--Leaflet-->
 
     <script>
-        const lat = -20.271926, lng = -40.325852
-        const zoom = 11.5
+        const lat = -20.281926, lng = -40.325852;
+        const zoom = 10.5;
 
         var map = L.map("mapa", {
             zoomSnap: 0.25 // definição de zoom
@@ -58,7 +59,7 @@
         logomarca.addTo(map);
         
 
-        // inserindo pontos
+        // inserindo GeoJSON de pontos de parada
         var pontos = L.geoJSON(pontos, {onEachFeature: function(feature,layer){
             let popupContent = `Código: ${layer.feature.properties.stop_code}`
             layer.bindPopup(popupContent);
@@ -73,21 +74,33 @@
         }    
     });
 
-        //inserindo cluster
+        //inserindo cluster dos pontos de parada
         var cPontos = L.markerClusterGroup({
+            disableClusteringAtZoom: 17,
             showCoverageOnHover: false,
-            zoomToBoundsOnClick: true,
             spiderfyOnMaxZoom: true,
-            maxClusterRadius: 100,
             spiderfyShapePositions: false,
+            maxClusterRadius: 150,
+            iconCreateFunction: function(cluster) {
+                return L.divIcon({html: `<div class="box">
+                    <img id="icone"src="imagens/cbus_stop.svg" alt="Ponto de parada"> 
+                    <p class="info">${cluster.getChildCount()}</p>
+                    </div>`, className:'informacao'})
+            }
         });
         cPontos.addLayer(pontos);
         map.addLayer(cPontos);
 
-
-
-
-    </script>
-    
+        //inserindo GeoJSON dos municípios
+        var municipios = L.geoJSON(municipios, 
+                {style:function(feature){
+                    return {
+                        fillColor: 'none',
+                        dashArray: '6',
+                        color: 'rgba(57, 124, 57, 0.37)',
+                    }
+        }}).addTo(map);
+        
+    </script>    
 </body>
 </html>
